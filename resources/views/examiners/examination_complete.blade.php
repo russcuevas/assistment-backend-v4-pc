@@ -15,6 +15,7 @@
             <tr>
                 <th>Course</th>
                 <th>Points</th>
+                <th>Over</th>
                 <th>Percentage (%)</th>
                 <th>Suggestions</th>
             </tr>
@@ -24,7 +25,9 @@
                 <tr>
                     <td>{{ $data['course_name'] }}</td>
                     <td>{{ $data['points'] }}</td>
+                    <td>{{ $data['over_points'] }}</td>
                     <td>{{ $data['percentage'] }}%</td>
+
                     <td>
                         @if($data['percentage'] > 80)
                             <span style="color: green;">Highly Recommended</span>
@@ -61,6 +64,7 @@
             <tr>
                 <th>Course</th>
                 <th>Points</th>
+                <th>Over</th>
                 <th>Percentage (%)</th>
             </tr>
         </thead>
@@ -69,6 +73,7 @@
                 <tr>
                     <td>{{ $data['course_name'] }}</td>
                     <td>{{ $data['points'] }}</td>
+                    <td>{{ $data['over_points'] }}</td>
                     <td>{{ $data['percentage'] }}%</td>
                 </tr>
             @endforeach

@@ -47,7 +47,9 @@ class ExaminationController extends Controller
         }
     
         $course_points = [];
+        $new_points = 0;
         $answers = $request->except('_token', 'step');
+        $total_questions = DB::table('questions')->count();
     
         foreach ($answers as $questionKey => $select_option_id) {
             if (preg_match('/^question_(\d+)$/', $questionKey, $matches)) {
@@ -62,7 +64,7 @@ class ExaminationController extends Controller
                     ->exists();
     
                 if (!$isOptionValid) {
-                    continue; 
+                    continue;
                 }
     
                 DB::table('responses')->insert([
@@ -73,11 +75,13 @@ class ExaminationController extends Controller
                     'updated_at' => now(),
                 ]);
     
-                $isCorrect = DB::table('options')
+                $is_correct = DB::table('options')
                     ->where('id', $select_option_id)
                     ->value('is_correct');
     
-                if ($isCorrect == 1) {
+                if ($is_correct == 1) {
+                    $new_points += 1;
+    
                     foreach ($course_ids as $course_id) {
                         if (!isset($course_points[$course_id])) {
                             $course_points[$course_id] = 0;
@@ -92,20 +96,41 @@ class ExaminationController extends Controller
         foreach ($course_points as $course_id => $points) {
             DB::table('course_scores')->updateOrInsert(
                 ['user_id' => $user->id, 'course_id' => $course_id],
-                ['points' => DB::raw('points + ' . $points)]
+                ['points' => DB::raw('IFNULL(points, 0) + ' . $points)]
             );
         }
+    
+        $existing_result = DB::table('results')
+            ->where('default_id', $user->id)
+            ->first();
+        
+        $existing_total_results = $existing_result ? $existing_result->total_points : 0;
+    
+        DB::table('results')->updateOrInsert(
+            ['default_id' => $user->id],
+            [
+                'fullname' => $user->fullname,
+                'gender' => $user->gender,
+                'age' => $user->age,
+                'birthday' => $user->birthday,
+                'strand' => $user->strand,
+                'total_points' => $existing_total_results + $new_points,
+                'number_of_items' => $total_questions,
+            ]
+        );
     
         $currentStep = (int) $request->input('step', 1);
         $subjects = ['math', 'english', 'science'];
         $nextStep = $currentStep + 1;
-
+    
         if ($nextStep <= count($subjects)) {
             return redirect()->route('examiners.examination.page', ['step' => $nextStep]);
         } else {
             return redirect()->route('examiners.examination.complete')->with('success', 'Examination submitted successfully.');
         }
     }
+
+    
 
     public function ExaminationCompletePage()
     {
@@ -139,19 +164,21 @@ class ExaminationController extends Controller
             ->groupBy('question_courses.course_id')
             ->pluck('total_points', 'course_id');
     
-        $courseData = $availableCourses->map(function ($course) use ($courseScores, $courseTotalPoints) {
-            $courseId = $course->id;
-            $points = $courseScores->get($courseId)->points ?? 0;
-            $totalPointsForCourse = $courseTotalPoints->get($courseId, 0);
-            $percentage = $totalPointsForCourse ? ($points / $totalPointsForCourse) * 100 : 0;
-    
-            return [
-                'course_name' => $course->course,
-                'course_id' => $courseId,
-                'points' => $points,
-                'percentage' => round($percentage, 2)
-            ];
-        })->sortByDesc('percentage');
+            $courseData = $availableCourses->map(function ($course) use ($courseScores, $courseTotalPoints) {
+                $courseId = $course->id;
+                $points = $courseScores->get($courseId)->points ?? 0;
+                $over_points = $courseTotalPoints->get($courseId, 0);
+                $percentage = $over_points ? ($points / $over_points) * 100 : 0;
+            
+                return [
+                    'course_name' => $course->course,
+                    'course_id' => $courseId,
+                    'points' => $points,
+                    'percentage' => round($percentage, 2),
+                    'over_points' => $over_points
+                ];
+            })->sortByDesc('percentage');
+            
     
         $chosenCourseIds = [
             $chosenCourses->course_1,
@@ -164,15 +191,17 @@ class ExaminationController extends Controller
                 'course_name' => $course['course_name'],
                 'points' => $course['points'],
                 'percentage' => $course['percentage'],
+                'over_points' => $course['over_points'],
                 'is_chosen' => in_array($course['course_id'], $chosenCourseIds),
             ];
         });
+        
     
         $topCourses = $courseData->filter(function ($course) use ($chosenCourseIds) {
             return in_array($course['course_id'], $chosenCourseIds);
         });
     
-        return view('examiners.examination_complete', compact('courseDataWithSuggestions', 'chosenCourses', 'topCourses'));
+        return view('examiners.examination_complete', compact('courseDataWithSuggestions', 'chosenCourses', 'topCourses',));
     }
     
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\admin\AdminDashboard;
+use App\Http\Controllers\admin\AnalyticsController;
 use App\Http\Controllers\admin\Course;
 use App\Http\Controllers\admin\ExaminersAccount;
 use App\Http\Controllers\admin\QuestionnaireController;
@@ -52,4 +53,7 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     Route::get('/admin/questionnaire/edit/{id}', [QuestionnaireController::class, 'EditQuestionnaire'])->name('admin.questionnaire.edit');
     Route::put('/admin/questionnaire/update/{id}', [QuestionnaireController::class, 'UpdateQuestionnaire'])->name('admin.questionnaire.update');
     Route::delete('/admin/questionnaire/delete/{id}', [QuestionnaireController::class, 'DeleteQuestionnaire'])->name('admin.questionnaire.delete');
+
+    // ANALYTICS MANAGEMENT
+    Route::get('/admin/analytics/', [AnalyticsController::class, 'AnalyticsPage'])->name('admin.analytics.page');
 });
