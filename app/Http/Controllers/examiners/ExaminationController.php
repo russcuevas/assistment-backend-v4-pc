@@ -201,7 +201,7 @@ class ExaminationController extends Controller
             return in_array($course['course_id'], $chosenCourseIds);
         });
     
-        return view('examiners.examination_complete', compact('courseDataWithSuggestions', 'chosenCourses', 'topCourses',));
+        return view('examiners.examination_complete', compact('courseDataWithSuggestions', 'chosenCourses', 'topCourses', 'user'));
     }
     
 }

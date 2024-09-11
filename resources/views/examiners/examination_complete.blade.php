@@ -6,6 +6,8 @@
 <body>
     <h1>Examination Complete</h1>
 
+    <h1>Hi {{ $user->fullname }} ( {{ $user->default_id }} )</h1>
+
     @if($courseDataWithSuggestions->isEmpty())
     <p>No data available.</p>
     @else
