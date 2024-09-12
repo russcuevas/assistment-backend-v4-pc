@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\ExaminersAccount;
 use App\Http\Controllers\admin\QuestionnaireController;
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\examiners\ExaminationController;
+use App\Http\Controllers\examiners\ExaminersDashboardController;
 use App\Http\Controllers\examiners\ExaminersInformation;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,9 @@ Route::post('/loginrequest', [AuthController::class, 'ExaminersLoginRequest'])->
 Route::get('/logout', [AuthController::class, 'ExaminersLogout'])->name('examinerslogout');
 // EXAMINERS PAGE
 Route::middleware(['auth:users', 'users'])->group(function () {
+    // EXAMINERS DASHBOARD PAGE
+    Route::get('/examiners/dashboard', [ExaminersDashboardController::class, 'ExaminersDashboardPage'])->name('examiners.dashboard.page');
+    
     // EXAMINERS LANDING PAGE
     Route::get('/examiners_landing', [ExaminersInformation::class, 'ExaminersInformationPage'])->name('examiners.landing.page');
     Route::post('/add_information', [ExaminersInformation::class, 'AddInformation'])->name('examiners.add.information');

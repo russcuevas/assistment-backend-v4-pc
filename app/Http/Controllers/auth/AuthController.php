@@ -44,16 +44,21 @@ class AuthController extends Controller
         if (Auth::guard('users')->check()){
             return redirect()->route('examiners.landing.page');
         }
-
         return view ('auth.login');
     }
 
     public function ExaminersLoginRequest(Request $request)
     {
         $credentials = $request->only('default_id', 'password');
-
         if (Auth::guard('users')->attempt($credentials)) {
-            return redirect()->intended('/examiners_landing');
+            $user_id = Auth::guard('users')->id();
+            $has_results = DB::table('course_scores')->where('user_id', $user_id)->exists();
+            
+            if ($has_results) {
+                return redirect('examiners/dashboard');
+            } else {
+                return redirect()->intended('/examiners_landing');
+            }
         }
 
         return redirect()->route('loginpage')->withErrors([
