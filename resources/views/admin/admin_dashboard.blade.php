@@ -11,8 +11,8 @@
     <a href="{{ route('admin.dashboard') }}">Dashboard</a><br>
     <a href="{{ route('admin.examiners.account') }}">Examiners Management</a><br>
     <a href="{{ route('admin.course') }}">Course List</a><br>
-    <a href="{{ route('admin.questionnaire') }}">Add exam questions</a>
-    <a href=""></a>
+    <a href="{{ route('admin.questionnaire') }}">Add exam questions</a><br>
+    <a href="{{ route('admin.analytics.page') }}">Analytics</a>
 
     <hr>
     <br>

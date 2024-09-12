@@ -60,4 +60,6 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
 
     // ANALYTICS MANAGEMENT
     Route::get('/admin/analytics/', [AnalyticsController::class, 'AnalyticsPage'])->name('admin.analytics.page');
+    Route::get('/admin/available-courses', [AnalyticsController::class, 'GetAvailableCourses'])->name('admin.available.courses');
+
 });

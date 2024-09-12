@@ -116,6 +116,8 @@ class ExaminationController extends Controller
                 'strand' => $user->strand,
                 'total_points' => $existing_total_results + $new_points,
                 'number_of_items' => $total_questions,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         );
     
