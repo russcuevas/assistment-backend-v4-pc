@@ -11,7 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->redirectGuestsTo('/login');
+        $middleware->redirectGuestsTo('/home');
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'users' => \App\Http\Middleware\IsUser::class,

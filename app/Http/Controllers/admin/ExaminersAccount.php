@@ -12,14 +12,11 @@ class ExaminersAccount extends Controller
 {
     public function ExaminersAccountPage()
     {
-        // Displaying available default_id in the page
+
         $available_default_id = User::all();
-
-        // Displaying the next default_id in the page
-        $highest_id = User::max('default_id');
-        $next_id = $highest_id ? $highest_id + 1 : 1;
-
-        // Displaying users related to selected course
+        $default_id = User::pluck('default_id')->toArray();
+        $next_id = !empty($default_id) ? max($default_id) + 1 : 1;
+    
         $examiners = DB::table('users')
             ->leftJoin('chosen_courses', 'users.id', '=', 'chosen_courses.user_id')
             ->leftJoin('available_courses as course_1', 'chosen_courses.course_1', '=', 'course_1.id')
@@ -38,20 +35,51 @@ class ExaminersAccount extends Controller
                 'course_3.course as course_3_name'
             )
             ->get();
-
-
+    
         return view('admin.admin_examiners_account', compact('available_default_id', 'next_id', 'examiners'));
     }
+    
 
     public function ExaminersAccountAdd(Request $request)
     {
-        $new_id = $request->input('default_id');
-
-        User::create([
-            'default_id' => $new_id,
-            'password' => Hash::make('ub1234')
+        $request->validate([
+            'count' => 'required|integer|min:1',
+            'default_id' => 'required|integer',
         ]);
+    
+        $count = (int) $request->input('count');
+        $starting_id = (int) $request->input('default_id');
+        $created_id = [];
+    
+        for ($i = 0; $i < $count; $i++) {
+            $newId = $starting_id + $i;
+    
+            if (User::where('default_id', $newId)->exists()) {
+                return redirect()->back()->withErrors(['default_id' => "Default ID $newId already exists. Please choose a different starting ID."]);
+            }
+    
+            User::create([
+                'default_id' => $newId,
+                'password' => Hash::make('ub1234')
+            ]);
+    
+            $created_id[] = $newId;
+        }
+    
+        return redirect()->route('admin.examiners.account')->with('success', 'Default IDs added successfully: ' . implode(', ', $created_id));
+    }
+    
+    
 
-        return redirect()->route('admin.examiners.account')->with('success', 'Default ID added successfully');
+    public function ExaminersDefaultIdDelete($default_id)
+    {
+        $user = User::where('default_id', $default_id)->first();
+
+        if ($user){
+            $user->delete();
+            return redirect()->route('admin.examiners.account')->with('success', 'Examiner deleted successfully');
+        }
+
+        return redirect()->route('admin.examiners.account')->with('error', 'Examiner not found');
     }
 }

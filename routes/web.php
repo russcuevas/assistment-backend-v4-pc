@@ -9,12 +9,16 @@ use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\examiners\ExaminationController;
 use App\Http\Controllers\examiners\ExaminersDashboardController;
 use App\Http\Controllers\examiners\ExaminersInformation;
+use App\Http\Controllers\guest\HomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [AuthController::class, 'LoginPage'])->name('loginpage');
+// GUEST
+Route::get('/', [HomeController::class, 'HomePage'])->name('homepage');
+Route::get('/home', [HomeController::class, 'HomePage'])->name('homepage');
 
 
-// AUTH PAGE
+
+// EXAMINERS AUTH PAGE
 Route::get('/login', [AuthController::class, 'LoginPage'])->name('loginpage');
 Route::post('/loginrequest', [AuthController::class, 'ExaminersLoginRequest'])->name('examiners.login.request');
 Route::get('/logout', [AuthController::class, 'ExaminersLogout'])->name('examinerslogout');
@@ -46,6 +50,8 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     // EXAMINERS ACCOUNT MANAGEMENT
     Route::get('/admin/admin_examiners_account', [ExaminersAccount::class, 'ExaminersAccountPage'])->name('admin.examiners.account');
     Route::post('/admin/add_examiners_account', [ExaminersAccount::class, 'ExaminersAccountAdd'])->name('admin.examiners.add');
+    Route::delete('/admin/examiners_account/delete/{default_id}', [ExaminersAccount::class, 'ExaminersDefaultIdDelete'])->name('admin.examiners.delete');
+
 
     // COURSE MANAGEMENT
     Route::get('/admin/admin_course', [Course::class, 'CoursePage'])->name('admin.course');
@@ -61,5 +67,4 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     // ANALYTICS MANAGEMENT
     Route::get('/admin/analytics/', [AnalyticsController::class, 'AnalyticsPage'])->name('admin.analytics.page');
     Route::get('/admin/available-courses', [AnalyticsController::class, 'GetAvailableCourses'])->name('admin.available.courses');
-
 });

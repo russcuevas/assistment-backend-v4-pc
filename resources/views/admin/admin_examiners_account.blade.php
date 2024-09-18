@@ -21,31 +21,47 @@
 
     <form action="{{ route('admin.examiners.add') }}" method="POST">
         @csrf
-        <label for="default_id">Default ID</label>
+        <label for="count">Number of ID to Add</label>
+        <input type="number" name="count" min="1" required><br>
+        <label for="default_id">Last ID</label>
         <input type="text" name="default_id" readonly value="{{ $next_id }}"><br>
         <input type="submit" value="Add Default ID">
     </form>
+    
+    
 
     <table>
         <thead>
             <tr>
-                <th>#</th>
                 <th>Default ID</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($available_default_id as $default_id)
             <tr>
-                <td>{{ $loop->iteration }}</td>
                 <td>{{ $default_id->default_id }}</td>
+                <td>
+                    @if(empty($default_id->fullname))
+                        <form action="{{ route('admin.examiners.delete', $default_id->default_id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" onclick="return confirm('Are you sure you want to delete this id?');">Delete</button>
+                        </form>
+                    @else
+                        <span>Has records</span>
+                    @endif
+                </td>
             </tr>
             @empty
                 <tr>
-                    <td colspan="3">No default id available</td>
+                    <td colspan="4">No default id available</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
+    
+    
 
     <hr>
 
