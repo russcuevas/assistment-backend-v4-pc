@@ -16,6 +16,9 @@ class Results extends Model
         'age',
         'birthday',
         'strand',
+        'course_1',
+        'course_2',
+        'course_3',
         'total_points',
         'number_of_items',
     ];

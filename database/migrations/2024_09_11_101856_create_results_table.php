@@ -19,6 +19,9 @@ return new class extends Migration
             $table->integer('age');
             $table->date('birthday');
             $table->string('strand');
+            $table->string('course_1');
+            $table->string('course_2');
+            $table->string('course_3');
             $table->integer('total_points');
             $table->integer('number_of_items');
             $table->timestamps();

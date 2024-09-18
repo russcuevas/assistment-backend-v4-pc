@@ -92,6 +92,15 @@ class ExaminationController extends Controller
                 }
             }
         }
+
+        $chosenCourses = DB::table('chosen_courses')
+        ->where('user_id', $user->id)
+        ->first();
+
+        if (!$chosenCourses) {
+            return redirect()->route('home')->with('error', 'No chosen courses found.');
+        }
+
     
         foreach ($course_points as $course_id => $points) {
             DB::table('course_scores')->updateOrInsert(
@@ -114,6 +123,9 @@ class ExaminationController extends Controller
                 'age' => $user->age,
                 'birthday' => $user->birthday,
                 'strand' => $user->strand,
+                'course_1' => $chosenCourses->course_1,
+                'course_2' => $chosenCourses->course_2,
+                'course_3' => $chosenCourses->course_3,
                 'total_points' => $existing_total_results + $new_points,
                 'number_of_items' => $total_questions,
                 'created_at' => now(),
