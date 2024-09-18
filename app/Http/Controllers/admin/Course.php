@@ -33,4 +33,39 @@ class Course extends Controller
 
         return redirect()->route('admin.course')->with('success', 'Course added successfully!');
     }
+
+    public function EditCourse($id)
+    {
+        $course = AvailableCourse::findOrFail($id);
+        return view('admin.admin_edit_course', compact('course'));
+    }
+    
+
+    public function UpdateCourse(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'course' => 'required|string|max:255',
+        ]);
+    
+        if ($validator->fails()) {
+            return redirect()->route('admin.course')
+                             ->withErrors($validator)
+                             ->withInput();
+        }
+    
+        $course = AvailableCourse::findOrFail($id);
+        $course->course = $request->input('course');
+        $course->save();
+    
+        return redirect()->route('admin.course')->with('success', 'Course updated successfully!');
+    }
+    
+
+    public function DeleteCourse($id)
+    {
+        $course = AvailableCourse::findOrFail($id);
+        $course->delete();
+    
+        return redirect()->route('admin.course')->with('success', 'Course deleted successfully!');
+    }    
 }

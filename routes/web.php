@@ -56,6 +56,10 @@ Route::middleware(['auth:admin', 'admin'])->group(function () {
     // COURSE MANAGEMENT
     Route::get('/admin/admin_course', [Course::class, 'CoursePage'])->name('admin.course');
     Route::post('/admin/add_course', [Course::class, 'AddCourse'])->name('addcourse');
+    Route::get('/admin/edit_course/{id}', [Course::class, 'EditCourse'])->name('editcourse');
+    Route::post('/admin/update_course/{id}', [Course::class, 'UpdateCourse'])->name('updatecourse');
+    Route::post('/admin/delete_course/{id}', [Course::class, 'DeleteCourse'])->name('deletecourse');
+
 
     // QUESTIONNAIRE MANAGEMENT
     Route::get('/admin/admin_questionnaire', [QuestionnaireController::class, 'QuestionnairePage'])->name('admin.questionnaire');

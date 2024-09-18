@@ -40,7 +40,13 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $available_course->course }}</td>
                     <td>
-                        <a href="#">Edit</a> | <a href="#">Delete</a>
+                        <a href="{{ route('editcourse', $available_course->id) }}">Edit</a>
+                    </td>
+                    <td>
+                        <form action="{{ route('deletecourse', $available_course->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this course?');">
+                        </form>
                     </td>
                 </tr>
             @empty

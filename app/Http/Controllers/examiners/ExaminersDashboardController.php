@@ -23,7 +23,7 @@ class ExaminersDashboardController extends Controller
             ->first();
         
         if (!$chosenCourses) {
-            return redirect()->route('home')->with('error', 'No chosen courses found.');
+            return redirect()->route('homepage')->with('error', 'No chosen courses found.');
         }
     
         $courseScores = DB::table('course_scores')
