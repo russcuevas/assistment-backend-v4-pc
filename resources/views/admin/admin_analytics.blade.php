@@ -78,8 +78,18 @@
         </tbody>
     </table>
     
+    <br>
+    <br>
+    <br>
+
+    <h1>Number of Examiners based on Gender</h1>
     <canvas id="genderChart" width="300" height="50"></canvas>
 
+    <br>
+    <br>
+    <br>
+
+    <h1>Available Course</h1>
     <canvas id="coursesChart" width="300" height="300"></canvas>
 
 
@@ -121,19 +131,17 @@
                     data: chartData,
                     options: {
                         plugins: {
+                            title: {
+                                display: true,
+                                text: 'Available Course',
+                            },
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
-                                        let label = context.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        if (context.raw !== null) {
-                                            label += context.raw;
-                                        }
-                                        return label;
+                                    label: function (context) {
+                                        const label = context.label || '';
+                                        return `${label}`;
                                     },
-                                    title: function(context) {
+                                    title: function (content) {
                                         return '';
                                     }
                                 }
