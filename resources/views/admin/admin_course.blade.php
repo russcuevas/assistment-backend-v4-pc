@@ -42,12 +42,12 @@
                     <td>
                         <a href="{{ route('editcourse', $available_course->id) }}">Edit</a>
                     </td>
-                    <td>
+                    {{-- <td>
                         <form action="{{ route('deletecourse', $available_course->id) }}" method="POST" style="display:inline;">
                             @csrf
                             <input type="submit" value="Delete" onclick="return confirm('Are you sure you want to delete this course?');">
                         </form>
-                    </td>
+                    </td> --}}
                 </tr>
             @empty
                 <tr>

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Admin - Analytics</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <a href="{{ route('adminlogout') }}">Logout</a><br>
@@ -17,7 +16,7 @@
     <hr>
     <h1>Analytics Page</h1>
 
-    <h1>Total Examinees</h1>
+    <h1>Total Examinees ({{ $number_of_examiners }})</h1>
     <table>
         <thead>
             <tr>
@@ -55,8 +54,12 @@
         </tbody>
     </table>
 
-    <h1>Top Notchers</h1>
-    {{-- Top Notchers --}}
+    <h1>Top Notchers ({{ $number_of_top_notchers }})</h1>
+    <select id="yearSelector" onchange="filterTopNotchers()">
+        <option value="">Select Year</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+    </select>
     <table>
         <thead>
             <tr>
@@ -66,7 +69,7 @@
                 <th>Number of items</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="topNotchersBody">
             @foreach ($topNotchers as $notcher)
                 <tr>
                     <td>{{ $notcher->default_id }}</td>
@@ -77,22 +80,23 @@
             @endforeach
         </tbody>
     </table>
+
     
     <br>
     <br>
     <br>
 
-    <h1>Number of Examiners based on Gender</h1>
+    <h1>Number of Examiners based on Gender ({{ $number_of_top_notchers }}) </h1>
     <canvas id="genderChart" width="300" height="50"></canvas>
 
     <br>
     <br>
     <br>
 
-    <h1>Available Course</h1>
+    <h1>Available Course ({{ $number_of_course }})</h1>
     <canvas id="coursesChart" width="300" height="300"></canvas>
 
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         fetch('{{ route('admin.available.courses') }}')
             .then(response => response.json())
@@ -205,5 +209,35 @@
         const ctx = document.getElementById('genderChart').getContext('2d');
         new Chart(ctx, config);
     </script>
+
+    {{-- FILTERING TOP NOTCHERS --}}
+    <script>
+        function filterTopNotchers() {
+            const selectedYear = document.getElementById('yearSelector').value;
+            const tbody = document.getElementById('topNotchersBody');
+            tbody.innerHTML = '';
+        
+            if (selectedYear) {
+                fetch(`/admin/top-notchers/${selectedYear}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.topNotchers.forEach(notcher => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${notcher.default_id}</td>
+                                <td>${notcher.fullname}</td>
+                                <td>${notcher.total_points}</td>
+                                <td>${notcher.number_of_items}</td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching top notchers:', error));
+            } else {
+            }
+        }
+        </script>
+    
+    
 </body>
 </html>

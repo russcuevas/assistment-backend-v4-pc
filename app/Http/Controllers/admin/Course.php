@@ -58,14 +58,5 @@ class Course extends Controller
         $course->save();
     
         return redirect()->route('admin.course')->with('success', 'Course updated successfully!');
-    }
-    
-
-    public function DeleteCourse($id)
-    {
-        $course = AvailableCourse::findOrFail($id);
-        $course->delete();
-    
-        return redirect()->route('admin.course')->with('success', 'Course deleted successfully!');
-    }    
+    } 
 }
