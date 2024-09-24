@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ResetPasswordMail;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -70,4 +74,59 @@ class AuthController extends Controller
         Auth::guard('users')->logout();
         return redirect()->route('loginpage');
     }
-}
+
+    // FORGOT PASSWORD
+    public function ForgotPasswordForm()
+    {
+        return view('auth.forgot_password');
+    }
+
+    public function ForgotForm($token)
+    {
+        return view('auth.reset_password_form', compact('token'));
+    }
+
+
+    public function ForgotPasswordRequest(Request $request)
+    {
+        $request->validate(['email' => 'required|email|exists:admins,email']);
+    
+        $token = Str::random(60);
+        DB::table('password_resets')->insert([
+            'email' => $request->email,
+            'token' => $token,
+            'created_at' => now(),
+        ]);
+    
+        $fullname = Admin::where('email', $request->email)->first()->fullname;
+        $resetLink = route('password.reset', ['token' => $token]);
+    
+        Mail::to($request->email)->send(new ResetPasswordMail($fullname, $resetLink));
+    
+        return back()->with('status', 'Reset link sent!');
+    }
+
+    public function ResetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:admins,email',
+            'password' => 'required|confirmed|min:8',
+            'token' => 'required',
+        ]);
+
+        $passwordReset = DB::table('password_resets')->where('email', $request->email)->where('token', $request->token)->first();
+
+        if (!$passwordReset) {
+            return back()->withErrors(['email' => 'Please request a new one']);
+        }
+
+        $admin = Admin::where('email', $request->email)->first();
+        $admin->password = bcrypt($request->password);
+        $admin->save();
+
+        DB::table('password_resets')->where('email', $request->email)->delete();
+
+        return redirect()->route('adminloginpage')->with('status', 'Password has been reset!');
+    }
+
+}    

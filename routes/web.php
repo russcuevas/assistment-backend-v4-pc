@@ -17,6 +17,14 @@ Route::get('/', [HomeController::class, 'HomePage'])->name('homepage');
 Route::get('/home', [HomeController::class, 'HomePage'])->name('homepage');
 
 
+// FORGOT PASSWORD
+Route::get('/forgot-password/form', [AuthController::class, 'ForgotPasswordForm'])->name('forgotpasswordform');
+Route::post('/forgot-password/request', [AuthController::class, 'ForgotPasswordRequest'])->name('forgotpasswordrequest');
+Route::get('/password/reset/{token}', [AuthController::class, 'ForgotForm'])->name('password.reset');
+Route::post('/password/resetpassword', [AuthController::class, 'ResetPassword'])->name('password.resetpassword');
+
+
+
 
 // EXAMINERS AUTH PAGE
 Route::get('/login', [AuthController::class, 'LoginPage'])->name('loginpage');
